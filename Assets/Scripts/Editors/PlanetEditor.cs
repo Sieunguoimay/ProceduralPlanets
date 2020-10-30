@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -33,14 +32,14 @@ public class PlanetEditor : Editor
         {
             var temp = planet.colorSettings.biomeColorSettings.biomes;
             planet.colorSettings.biomeColorSettings.biomes = new ColorSettings.BiomeColorSettings.Biome[3];
-            temp.CopyTo(planet.colorSettings.biomeColorSettings.biomes,1);
+            temp.CopyTo(planet.colorSettings.biomeColorSettings.biomes, 1);
             planet.colorSettings.biomeColorSettings.biomes[0] = new ColorSettings.BiomeColorSettings.Biome()
             {
                 gradient = temp[1].gradient,
                 tint = temp[1].tint,
                 startHeight = temp[1].startHeight,
                 tintPercent = temp[1].tintPercent,
-        };
+            };
         }
 
     }
@@ -71,3 +70,4 @@ public class PlanetEditor : Editor
         planet = (Planet)target;
     }
 }
+#endif //UNITY_EDITOR

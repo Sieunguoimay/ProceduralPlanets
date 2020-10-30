@@ -1,0 +1,81 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+
+RWTexture3D<float4> Result;
+
+StructuredBuffer<float3> Points;
+
+int NumCellsPerAxis;
+float3 TextureResolution;
+
+const int3 offsets[27] = {
+	int3(-1,-1,-1),int3(-1,0,-1),int3(-1,1,-1),
+	int3(0,-1,-1),int3(0,0,-1),int3(0,1,-1),
+	int3(1,-1,-1),int3(1,0,-1),int3(1,1,-1),
+
+	int3(-1,-1,0),int3(-1,0,0),int3(-1,1,0),
+	int3(0,-1,0),int3(0,0,0),int3(0,1,0),
+	int3(1,-1,0),int3(1,0,0),int3(1,1,0),
+
+	int3(-1,-1,1),int3(-1,0,1),int3(-1,1,1),
+	int3(0,-1,1),int3(0,0,1),int3(0,1,1),
+	int3(1,-1,1),int3(1,0,1),int3(1,1,1),
+
+};
+int minComponent(int id) {
+	if (id < 0) {
+		return -1;
+	}
+	return id;
+}
+int maxComponent(int id) {
+	if (id > NumCellsPerAxis - 1) {
+		return NumCellsPerAxis;
+	}
+	return id;
+}
+float worley(StructuredBuffer<float3> points, int numCells, float3 samplePos) {
+	int3 cellID = floor(samplePos * numCells);
+
+	float minSqrDst = 1;
+
+	for (int cellOffsetIndex = 0; cellOffsetIndex < 27; cellOffsetIndex++) {
+		int3 adjID = cellID + offsets[cellOffsetIndex];
+
+		if (minComponent(adjID) == -1 || maxComponent(adjID) == numCells) {
+			int3 wrappedID = (adjID + numCells) % (uint3)numCells;
+			int adjCellIndex = wrappedID.x + numCells * (wrappedID.y + numCells * wrappedID.z);
+
+			float3 wrappedPoint = points[adjCellIndex];
+
+			for (int wrapOffsetIndex = 0; wrapOffsetIndex < 27; wrapOffsetIndex++) {
+				float3 sampleOffset = (samplePos - (wrappedPoint + offsets[wrapOffsetIndex]));
+				minSqrDst = min(minSqrDst, dot(sampleOffset, sampleOffset));
+			}
+		}
+		else {
+			int adjCellIndex = adjID.x + numCells * (adjID.y + numCells * adjID.z);
+			float3 sampleOffset = samplePos - points[adjCellIndex];
+			minSqrDst = min(minSqrDst, dot(sampleOffset, sampleOffset));
+		}
+	}
+	return sqrt(minSqrDst);
+}
+
+
+[numthreads(8, 8, 8)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	float3 samplePos = float3((float)id.x / TextureResolution.x, (float)id.y / TextureResolution.y, (float)id.z / TextureResolution.z);
+	float noiseValue;// = worley(Points, NumCellsPerAxis, samplePos);
+
+	noiseValue = samplePos.x * samplePos.y * samplePos.z;
+
+	Result[id.xyz] = float4(noiseValue, 0, 0, 1);
+}
+
+// float4(id.x & id.y, (id.x & 15) / 15.0, (id.y & 15) / 15.0, 0.0);
+
