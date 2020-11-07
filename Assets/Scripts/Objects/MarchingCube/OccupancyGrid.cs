@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class OccupancyGrid 
 {
-    private IOccupancyDescriptor occupancyDescriptor;
+    public IOccupancyDescriptor occupancyDescriptor;
 
     public OccupancyGridSettings settings;
 
@@ -12,21 +12,14 @@ public class OccupancyGrid
     {
         this.occupancyDescriptor = occupancyDescriptor;
         this.settings = settings;
-        this.settings.size = Vector3Int.FloorToInt(settings.bounds.size *(1.0f/ settings.cellSize));
+        this.settings.resolution = Vector3Int.FloorToInt(settings.bounds.size*(1.0f/ settings.cellSize));
     }
 
-    public bool IsInside(int x, int y, int z)
-    {
-        float cellSize = settings.bounds.size.x / settings.size.x;
-        Vector3 point = new Vector3(x, y, z) * cellSize;
-        Vector3 origin = new Vector3(settings.size.x, settings.size.y, settings.size.z) * cellSize * 0.5f;
-        Vector3 relPos = point - origin;
-
-        return occupancyDescriptor.IsInside(relPos);
-    }
 
     public Vector3 GetPosition(int x, int y, int z)
     {
-        return new Vector3();
+        Vector3 point = new Vector3(x, y, z) * settings.cellSize;
+        Vector3 relPos = point - settings.bounds.size * 0.5f;
+        return relPos;
     }
 }

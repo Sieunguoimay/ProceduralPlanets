@@ -10,11 +10,11 @@ public class Atmosphere : MonoBehaviour, IPostProcessing
 
     [SerializeField] private CameraController cameraController;
 
-    private void OnValidate()
-    {
-        planet = GetComponent<Planet>();
-        cameraController.AddPostProcessingClient(this);
-    }
+    //private void OnValidate()
+    //{
+    //    planet = GetComponent<Planet>();
+    //    cameraController.AddPostProcessingClient(this);
+    //}
     private void Awake()
     {
         planet = GetComponent<Planet>();

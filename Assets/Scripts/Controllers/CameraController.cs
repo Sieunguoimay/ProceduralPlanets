@@ -15,10 +15,10 @@ public class CameraController : MonoBehaviour
 
 
     //Events Trigger by UnityEditor
-    void OnValidate()
-    {
-        Initialize();
-    }
+    //void OnValidate()
+    //{
+    //    Initialize();
+    //}
     private void Awake()
     {
         Initialize();
@@ -37,7 +37,6 @@ public class CameraController : MonoBehaviour
             Graphics.Blit(source, destination);
         }
     }
-
 
     //Camera Real Functions
     public void Initialize()

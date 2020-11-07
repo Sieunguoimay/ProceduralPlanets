@@ -9,5 +9,5 @@ public class OccupancyGridSettings : ScriptableObject
     public Bounds bounds;
     public float cellSize;
 
-    [NonSerialized] public Vector3Int size;
+    public Vector3Int resolution;
 }

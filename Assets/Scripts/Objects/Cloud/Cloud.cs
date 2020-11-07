@@ -15,10 +15,10 @@ public class Cloud : MonoBehaviour, IPostProcessing
 
 
     //Editor Events
-    private void OnValidate()
-    {
-        Initialize();
-    }
+    //private void OnValidate()
+    //{
+    //    Initialize();
+    //}
 
     void Start()
     {
@@ -26,7 +26,6 @@ public class Cloud : MonoBehaviour, IPostProcessing
     }
 
     //Self 
-
     public void UpdateFromEditor()
     {
         GenerateTexture();

@@ -10,11 +10,24 @@ public class NoiseOccupancyDescriptor : IOccupancyDescriptor
 
     public NoiseOccupancyDescriptor(NoiseOccupancySettings settings)
     {
+        this.settings = settings;
+
         noiseFilter3D = NoiseFilterFactory.CreateNoiseFilter(settings.noiseSettings);
+    }
+
+    public float GetMiddlePoint()
+    {
+        return settings.threshold;
+    }
+
+    public float GetValue(Vector3 point)
+    {
+        return noiseFilter3D.Evaluate(Vector3.Scale(point, settings.scale) + settings.offset);
     }
 
     public bool IsInside(Vector3 point)
     {
-        return noiseFilter3D.Evaluate(Vector3.Scale(point,settings.scale)+settings.offset) > settings.threshold;
+        return  GetValue(point) > settings.threshold;
     }
+
 }
